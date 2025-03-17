@@ -1,0 +1,8 @@
+flask
+torch
+TTS
+librosa
+soundfile
+numpy
+scipy
+gunicorn
