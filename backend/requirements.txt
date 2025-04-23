@@ -138,4 +138,3 @@ weasel==0.4.1
 Werkzeug==3.1.3
 wrapt==1.17.2
 yarl==1.18.3
-TTS==0.22.0
