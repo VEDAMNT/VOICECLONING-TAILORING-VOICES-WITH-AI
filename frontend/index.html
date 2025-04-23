@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Voice Cloner</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Particles.js for background animation -->
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #c0c5d4;
+            background: linear-gradient(135deg, #28405C 0%, #2a3d58 50%, #2a3d58 100%);
+            overflow-x: hidden;
+            position: relative;
+        }
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            z-index: -1;
+        }
+        .dark-mode {
+            background: linear-gradient(135deg, #28405C 0%, #2a3d58 50%, #2a3d58 100%);
+            color: #c0c5d4;
+        }
+        .light-mode {
+            background: linear-gradient(135deg, #4A5E7C 0%, #4e647f 50%, #4e647f 100%);
+            color: #4a4a5a;
+        }
+        .header {
+            background: linear-gradient(90deg, #428998 0%, #2a3d58 100%);
+            padding: 20px 40px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(66, 137, 152, 0.3);
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+            position: relative;
+            z-index: 2;
+        }
+        .light-mode .header {
+            background: linear-gradient(90deg, #6BA0B0 0%, #4e647f 100%);
+            box-shadow: 0 4px 20px rgba(107, 160, 176, 0.3);
+        }
+        .header .logo {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #c0c5d4;
+            margin-right: 20px;
+            text-shadow: 0 0 10px rgba(192, 197, 212, 0.5);
+        }
+        .light-mode .header .logo {
+            color: #4a4a5a;
+            text-shadow: 0 0 10px rgba(74, 74, 90, 0.5);
+        }
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 20px 50px;
+            position: relative;
+            z-index: 1;
+        }
+        .button-container {
+            position: relative;
+            width: 100%;
+            max-width: 1350px;
+            margin-bottom: 20px;
+            text-align: right;
+        }
+        #themeToggleBtn {
+            background: linear-gradient(135deg, #428998, #355f6a);
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #c0c5d4;
+            transition: transform 0.2s, box-shadow 0.3s;
+            box-shadow: 0 0 15px rgba(66, 137, 152, 0.5);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .light-mode #themeToggleBtn {
+            background: linear-gradient(135deg, #6BA0B0, #57858f);
+            color: #4a4a5a;
+            box-shadow: 0 0 15px rgba(107, 160, 176, 0.5);
+        }
+        #themeToggleBtn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(53, 95, 106, 0.7);
+        }
+        .light-mode #themeToggleBtn:hover {
+            box-shadow: 0 0 20px rgba(87, 133, 143, 0.7);
+        }
+        .input-output-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 20px;
+            width: 100%;
+            max-width: 1350px;
+        }
+        .input-section {
+            background: rgba(42, 61, 88, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(66, 137, 152, 0.2);
+            width: 100%;
+            max-width: 800px;
+            min-height: 600px;
+            margin-bottom: 0;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(192, 197, 212, 0.05);
+        }
+        .light-mode .input-section {
+            background: rgba(74, 94, 124, 0.8);
+            border: 1px solid rgba(74, 74, 90, 0.1);
+            box-shadow: 0 10px 30px rgba(107, 160, 176, 0.2);
+        }
+        .input-section:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(66, 137, 152, 0.3);
+        }
+        .light-mode .input-section:hover {
+            box-shadow: 0 15px 40px rgba(107, 160, 176, 0.3);
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            margin: 15px 0;
+            border: 2px solid rgba(192, 197, 212, 0.2);
+            border-radius: 15px;
+            box-sizing: border-box;
+            font-size: 16px;
+            background: rgba(42, 61, 88, 0.5);
+            color: #c0c5d4;
+            resize: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .light-mode input[type="text"] {
+            color: #4a4a5a;
+            background: rgba(74, 94, 124, 0.5);
+            border-color: rgba(74, 74, 90, 0.2);
+        }
+        input[type="text"]:focus {
+            border-color: #428998;
+            box-shadow: 0 0 10px rgba(66, 137, 152, 0.5);
+            outline: none;
+        }
+        .light-mode input[type="text"]:focus {
+            border-color: #6BA0B0;
+            box-shadow: 0 0 10px rgba(107, 160, 176, 0.5);
+        }
+        select, input[type="range"] {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: #f9f9f9;
+            transition: border-color 0.3s ease;
+        }
+        select:focus, input[type="range"]:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+        }
+        button {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 10px;
+            transition: transform 0.2s, background 0.3s, box-shadow 0.3s;
+            background: linear-gradient(135deg, #428998, #355f6a);
+            color: #c0c5d4;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 0 15px rgba(66, 137, 152, 0.5);
+        }
+        .light-mode button {
+            background: linear-gradient(135deg, #6BA0B0, #57858f);
+            color: #4a4a5a;
+            box-shadow: 0 0 15px rgba(107, 160, 176, 0.5);
+        }
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(53, 95, 106, 0.7);
+        }
+        .light-mode button:hover {
+            box-shadow: 0 0 20px rgba(87, 133, 143, 0.7);
+        }
+        #addSampleBtn { background: linear-gradient(135deg, #428998, #355f6a); }
+        #recordBtn { background: linear-gradient(135deg, #355f6a, #2a4d55); }
+        #recordBtn.recording { background: linear-gradient(135deg, #2a4d55, #1e3d44); }
+        #addVoiceBtn { background: linear-gradient(135deg, #428998, #355f6a); }
+        #speakTextBtn { background: linear-gradient(135deg, #673ab7, #512e90); }
+        #speakTextBtn.listening { background: linear-gradient(135deg, #f44336, #b71c1c); }
+        #clearBtn { background: linear-gradient(135deg, #5c2a2a, #6a3535); }
+        .light-mode #addSampleBtn { background: linear-gradient(135deg, #6BA0B0, #57858f); }
+        .light-mode #recordBtn { background: linear-gradient(135deg, #57858f, #40666f); }
+        .light-mode #recordBtn.recording { background: linear-gradient(135deg, #40666f, #2e4e57); }
+        .light-mode #addVoiceBtn { background: linear-gradient(135deg, #6BA0B0, #57858f); }
+        .light-mode #speakTextBtn { background: linear-gradient(135deg, #9575cd, #673ab7); }
+        .light-mode #speakTextBtn.listening { background: linear-gradient(135deg, #ef5350, #e57373); }
+        .light-mode #clearBtn { background: linear-gradient(135deg, #a35a5a, #b36a6a); }
+        .samples-output-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 500px;
+            min-height: 600px;
+        }
+        .recorded-samples {
+            background: rgba(42, 61, 88, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(66, 137, 152, 0.2);
+            width: 100%;
+            max-width: 1350px;
+            margin: 20px auto;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .light-mode .recorded-samples {
+            background: rgba(74, 94, 124, 0.8);
+            box-shadow: 0 10px 30px rgba(107, 160, 176, 0.2);
+        }
+        .recorded-samples:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(66, 137, 152, 0.3);
+        }
+        .light-mode .recorded-samples:hover {
+            box-shadow: 0 15px 40px rgba(107, 160, 176, 0.3);
+        }
+        .sample-item {
+            background: linear-gradient(135deg, #428998, #355f6a);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            min-height: 60px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 15px;
+            gap: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .light-mode .sample-item {
+            background: linear-gradient(135deg, #6BA0B0, #57858f);
+        }
+        .sample-item audio {
+            width: 80%;
+            border-radius: 8px;
+            background: #ffffff;
+            outline: none;
+        }
+        .sample-item button {
+            background: linear-gradient(135deg, #dc3545, #b02a37);
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(220, 53, 69, 0.3);
+        }
+        .light-mode .sample-item button {
+            background: linear-gradient(135deg, #ef5350, #e57373);
+            box-shadow: 0 2px 5px rgba(239, 83, 80, 0.3);
+        }
+        .sample-item button:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #c82333, #a71d2a);
+        }
+        .light-mode .sample-item button:hover {
+            background: linear-gradient(135deg, #d32f2f, #c62828);
+        }
+        .output-section {
+            background: rgba(42, 61, 88, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(66, 137, 152, 0.2);
+            flex: 1;
+            margin-top: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            width: 100%;
+            max-width: 800px;
+        }
+        .light-mode .output-section {
+            background: rgba(74, 94, 124, 0.8);
+            box-shadow: 0 10px 30px rgba(107, 160, 176, 0.2);
+        }
+        .output-section:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(66, 137, 152, 0.3);
+        }
+        .light-mode .output-section:hover {
+            box-shadow: 0 15px 40px rgba(107, 160, 176, 0.3);
+        }
+        audio {
+            margin-top: 10px;
+            width: 100%;
+            border-radius: 8px;
+        }
+        #loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(42, 61, 88, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(66, 137, 152, 0.5);
+            color: #c0c5d4;
+            text-align: center;
+            z-index: 1000;
+            display: none;
+        }
+        .light-mode #loading {
+            background: rgba(74, 94, 124, 0.9);
+            box-shadow: 0 0 15px rgba(107, 160, 176, 0.5);
+        }
+        .progress-bar {
+            width: 200px;
+            height: 20px;
+            background: #355f6a;
+            border-radius: 10px;
+            margin: 10px auto;
+            overflow: hidden;
+        }
+        .light-mode .progress-bar {
+            background: #57858f;
+        }
+        .progress {
+            width: 0%;
+            height: 100%;
+            background: #428998;
+            text-align: center;
+            line-height: 20px;
+            transition: width 0.3s;
+        }
+        .light-mode .progress {
+            background: #6BA0B0;
+        }
+        #download {
+            display: none;
+            margin-top: 10px;
+        }
+        #download a {
+            color: #428998;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .light-mode #download a {
+            color: #6BA0B0;
+        }
+        #download a:hover {
+            text-decoration: underline;
+        }
+        #sampleCount {
+            font-size: 12px;
+            color: #9098a8;
+            margin-top: 5px;
+            font-weight: 300;
+        }
+        .light-mode #sampleCount {
+            color: #7a7a8c;
+        }
+        .voice-samples {
+            background: #2a3d58;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+            margin-top: auto;
+        }
+        .voice-sample {
+            display: inline-block;
+            margin: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+        }
+        .voice-sample img {
+            width: 150px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(66, 137, 152, 0.2);
+        }
+        .voice-sample:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(66, 137, 152, 0.3);
+        }
+        .voice-label {
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #c0c5d4;
+            font-size: 14px;
+            font-weight: 600;
+            background: rgba(42, 61, 88, 0.7);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        .light-mode .voice-samples {
+            background: #4e647f;
+        }
+        .light-mode .voice-label {
+            background: rgba(74, 94, 124, 0.7);
+            color: #4a4a5a;
+        }
+        @media (max-width: 900px) {
+            .input-output-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .input-section, .output-section, .recorded-samples {
+                width: 100%;
+                max-width: 800px;
+            }
+            .samples-output-container {
+                min-height: auto;
+            }
+            .output-section {
+                margin-top: 20px;
+            }
+            .recorded-samples {
+                flex-direction: column;
+                align-items: center;
+            }
+            .sample-item {
+                width: 100%;
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            .sample-item audio {
+                width: 90%;
+                margin-bottom: 10px;
+            }
+            .sample-item button {
+                width: 120px;
+                margin: 0 auto 10px;
+            }
+            .voice-sample img {
+                width: 120px;
+                height: 160px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <div class="header">
+        <div class="logo">🎙️ Voice Cloning : Tailoring Voices with AI</div>
+    </div>
+    <div class="container">
+        <div class="button-container">
+            <button id="themeToggleBtn" onclick="toggleTheme()">
+                <i class="fas fa-moon"></i> Toggle Dark Mode
+            </button>
+        </div>
+        <div class="input-output-container">
+            <div class="input-section">
+                <h2>Type the text you want to clone into your custom voice.</h2>
+                <p style="font-size: 12px; color: #9098a8; margin-bottom: 10px;"> Record/upload samples with "Record Voice Sample" or "Add Voice Sample" (manage in Recorded Samples).  </p>
+                <p style="font-size: 12px; color: #9098a8; margin-bottom: 10px;"> Set language, speed, and pitch, then click "Generate" to clone (watch progress bar). </p> 
+                <p style="font-size: 12px; color: #9098a8; margin-bottom: 10px;"> Play/download the result, or clear with "Clear". Toggle theme with the button.</p>  
+                <p style="font-size: 12px; color: #9098a8; margin-bottom: 10px;"> Ensure microphone access and use a modern browser. </p>
+                <input type="text" id="textInput" placeholder="Type your text here...">
+                <select id="language" name="language">
+                    <option value="en">English</option>
+                    <option value="hi">Hindi</option>
+                </select>
+                <label for="speed">Speed (0.5 to 2.0):</label>
+                <input type="range" id="speed" name="speed" min="0.5" max="2.0" step="0.1" value="1.0">
+                <label for="pitch">Pitch (-5 to 5 semitones):</label>
+                <input type="range" id="pitch" name="pitch" min="-5" max="5" step="0.1" value="0">
+                <button id="addSampleBtn" onclick="document.getElementById('audioInput').click()">
+                    <i class="fas fa-upload"></i> Add Voice Sample
+                </button>
+                <button id="recordBtn" onclick="toggleRecording()">
+                    <i class="fas fa-microphone"></i> Record Voice Sample
+                </button>
+                <button id="addVoiceBtn" onclick="cloneVoice()">
+                    <i class="fas fa-microphone"></i> Generate
+                </button>
+                <button id="clearBtn" onclick="clearForm()">
+                    <i class="fas fa-trash"></i> Clear
+                </button>
+                <input type="file" id="audioInput" accept="audio/wav" multiple style="display:none;" onchange="updateSampleCount()">
+                <p id="sampleCount">0 samples selected</p>
+            </div>
+            <div class="samples-output-container">
+                <div class="recorded-samples" id="recordedSamples">
+                    <h3>Recorded Samples</h3>
+                    <div id="sampleList"></div>
+                </div>
+                <div class="output-section" id="output-section">
+                    <h2>Generated Output</h2>
+                    <audio id="output" controls></audio>
+                    <div id="download">
+                        <a id="downloadLink" download><i class="fas fa-download"></i> Download Audio</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="voice-samples" id="voiceSamples">
+        <h2>DEMO</h2>
+        <div class="voice-sample" onclick="playSample('sample1.wav')">
+            <img src="/static/images/sample1.jpg" alt="Sam Voice">
+            <div class="voice-label">Vedant</div>
+            <audio id="sample1Audio" src="/static/audio/sample1.wav" style="display:none;"></audio>
+        </div>
+        <div class="voice-sample" onclick="playSample('sample2.wav')">
+            <img src="/static/images/sample2.jpg" alt="Sample Voice 2">
+            <div class="voice-label">Nihal</div>
+            <audio id="sample2Audio" src="/static/audio/sample2.wav" style="display:none;"></audio>
+        </div>
+        <div class="voice-sample" onclick="playSample('sample3.wav')">
+            <img src="/static/images/sample3.jpg" alt="Sample Voice 3">
+            <div class="voice-label">Sanika</div>
+            <audio id="sample3Audio" src="/static/audio/sample3.wav" style="display:none;"></audio>
+        </div>
+        <div class="voice-sample" onclick="playSample('sample4.wav')">
+            <img src="/static/images/sample4.jpg" alt="Sam Voice">
+            <div class="voice-label">Parth</div>
+            <audio id="sample4Audio" src="/static/audio/sample4.wav" style="display:none;"></audio>
+        </div>
+    </div>
+    <footer>
+        © 2025 BE Artificial Intelligence and Data Science
+    </footer>
+
+    <div id="loading" style="display: none;">
+        Generating your voice...
+        <div class="progress-bar">
+            <div id="progress" class="progress">0%</div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize particles.js
+        particlesJS("particles-js", {
+            particles: {
+                number: { value: 100, density: { enable: true, value_area: 800 } },
+                color: { value: ["#428998", "#355f6a", "#c0c5d4"] },
+                shape: { type: "circle" },
+                opacity: { value: 0.7, random: true, anim: { enable: true, speed: 1, opacity_min: 0.4 } },
+                size: { value: 5, random: true, anim: { enable: true, speed: 3, size_min: 0.5 } },
+                line_linked: { enable: true, distance: 150, color: "#428998", opacity: 0.4, width: 1 },
+                move: { enable: true, speed: 3, direction: "none", random: true, straight: false, out_mode: "out", bounce: false }
+            },
+            interactivity: {
+                events: { onhover: { enable: true, mode: "grab" }, onclick: { enable: true, mode: "push" } },
+                modes: { grab: { distance: 200, line_linked: { opacity: 0.5 } }, push: { particles_nb: 4 } }
+            },
+            retina_detect: true
+        });
+
+        // Audio recording variables
+        let mediaRecorder;
+        let audioChunks = [];
+        let recordedAudioBlobs = [];
+        let isRecording = false;
+
+        // Speech-to-text variables
+        let recognition;
+        let isListening = false;
+
+        // Initialize speech recognition
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById("textInput").value = transcript;
+                stopSpeechToText();
+            };
+            recognition.onerror = (event) => {
+                console.error("Speech recognition error:", event.error);
+                stopSpeechToText();
+                alert("Speech recognition error: " + event.error);
+            };
+            recognition.onend = () => {
+                stopSpeechToText();
+            };
+        } else {
+            console.warn("SpeechRecognition API not supported in this browser.");
+            document.getElementById("speakTextBtn").style.display = "none";
+        }
+
+        // Add a fallback for getUserMedia
+        navigator.getUserMedia = (
+            navigator.getUserMedia ||
+            navigator.webkitGetUserMedia ||
+            navigator.mozGetUserMedia ||
+            navigator.msGetUserMedia
+        );
+
+        async function toggleRecording() {
+            const recordBtn = document.getElementById("recordBtn");
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                if (navigator.getUserMedia) {
+                    navigator.getUserMedia({ audio: true }, (stream) => handleStream(stream), (err) => {
+                        console.error("Error accessing microphone with legacy API:", err);
+                        alert("Error accessing microphone: " + err.message + ". Please use a modern browser.");
+                    });
+                } else {
+                    alert("Your browser does not support audio recording.");
+                    return;
+                }
+            } else {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    handleStream(stream);
+                } catch (err) {
+                    console.error("Error accessing microphone:", err);
+                    alert("Error accessing microphone: " + err.message + ". Please ensure microphone access is allowed.");
+                    return;
+                }
+            }
+
+            function handleStream(stream) {
+                if (!isRecording) {
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+                    mediaRecorder.ondataavailable = (event) => audioChunks.push(event.data);
+                    mediaRecorder.onstop = () => {
+                        const newBlob = new Blob(audioChunks, { type: "audio/wav" });
+                        recordedAudioBlobs.push(newBlob);
+                        updateSampleCount();
+                        updateSampleList();
+                        stream.getTracks().forEach(track => track.stop());
+                    };
+                    mediaRecorder.start();
+                    isRecording = true;
+                    recordBtn.textContent = "Stop Recording";
+                    recordBtn.classList.add("recording");
+                } else {
+                    mediaRecorder.stop();
+                    isRecording = false;
+                    recordBtn.textContent = "Record Voice Sample";
+                    recordBtn.classList.remove("recording");
+                }
+            }
+        }
+
+        function updateSampleList() {
+            const sampleList = document.getElementById("sampleList");
+            const recordedSamplesSection = document.getElementById("recordedSamples");
+            sampleList.innerHTML = "";
+            if (recordedAudioBlobs.length > 0) {
+                recordedSamplesSection.style.display = "block";
+                recordedAudioBlobs.forEach((blob, index) => {
+                    const sampleItem = document.createElement("div");
+                    sampleItem.className = "sample-item";
+                    const audioElement = document.createElement("audio");
+                    audioElement.controls = true;
+                    audioElement.src = URL.createObjectURL(blob);
+                    const deleteButton = document.createElement("button");
+                    deleteButton.innerHTML = '<i class="fas fa-trash"></i> Delete';
+                    deleteButton.onclick = () => deleteSample(index);
+                    sampleItem.appendChild(audioElement);
+                    sampleItem.appendChild(deleteButton);
+                    sampleList.appendChild(sampleItem);
+                });
+            } else {
+                recordedSamplesSection.style.display = "none";
+            }
+        }
+
+        function deleteSample(index) {
+            recordedAudioBlobs.splice(index, 1);
+            updateSampleList();
+            updateSampleCount();
+        }
+
+        function startSpeechToText() {
+            if (!recognition) {
+                alert("Speech recognition is not supported in this browser.");
+                return;
+            }
+            const language = document.getElementById("language").value;
+            recognition.lang = language === "en" ? "en-US" : "hi-IN";
+            recognition.start();
+            isListening = true;
+            const speakTextBtn = document.getElementById("speakTextBtn");
+            speakTextBtn.textContent = "Listening...";
+            speakTextBtn.classList.add("listening");
+        }
+
+        function stopSpeechToText() {
+            if (recognition && isListening) recognition.stop();
+            isListening = false;
+            const speakTextBtn = document.getElementById("speakTextBtn");
+            speakTextBtn.textContent = "Speak Text";
+            speakTextBtn.classList.remove("listening");
+        }
+
+        async function cloneVoice() {
+            const audioInput = document.getElementById("audioInput");
+            const text = document.getElementById("textInput").value;
+            const language = document.getElementById("language").value;
+            const speed = document.getElementById("speed").value;
+            const pitch = document.getElementById("pitch").value;
+            const files = audioInput.files;
+
+            if (recordedAudioBlobs.length === 0 && files.length === 0) {
+                alert("Please add or record at least one voice sample.");
+                return;
+            }
+
+            document.getElementById("loading").style.display = "block";
+            document.getElementById("download").style.display = "none";
+            document.getElementById("output-section").style.display = "none";
+            const progressBar = document.getElementById("progress");
+
+            const formData = new FormData();
+            formData.append("text", text);
+            formData.append("language", language);
+            formData.append("speed", speed);
+            formData.append("pitch", pitch);
+            recordedAudioBlobs.forEach((blob, index) => formData.append("audio", blob, `recorded_audio_${index}.wav`));
+            for (let i = 0; i < files.length; i++) formData.append("audio", files[i]);
+
+            const response = await fetch("/clone", { method: "POST", body: formData });
+            if (!response.ok) {
+                const error = await response.text();
+                document.getElementById("loading").style.display = "none";
+                alert("Error: " + error);
+                return;
+            }
+
+            const generationId = response.headers.get("X-Generation-ID");
+            if (!generationId) {
+                document.getElementById("loading").style.display = "none";
+                alert("Error: Generation ID not found.");
+                return;
+            }
+
+            const eventSource = new EventSource("/clone?" + new URLSearchParams({ text: text || "", language, id: generationId }).toString());
+            eventSource.onmessage = (event) => {
+                const progress = parseInt(event.data);
+                if (progress >= 0 && progress <= 100) {
+                    progressBar.style.width = progress + "%";
+                    progressBar.textContent = progress + "%";
+                    if (progress === 100) eventSource.close();
+                }
+            };
+            eventSource.onerror = () => {
+                eventSource.close();
+                console.error("Error receiving progress updates.");
+            };
+
+            const audioBlob = await response.blob();
+            const audioUrl = URL.createObjectURL(audioBlob);
+            const audioElement = document.getElementById("output");
+            audioElement.src = audioUrl;
+            document.getElementById("downloadLink").href = audioUrl;
+            document.getElementById("downloadLink").download = `cloned_voice_${generationId}.wav`;
+            document.getElementById("download").style.display = "block";
+            document.getElementById("output-section").style.display = "block";
+            document.getElementById("loading").style.display = "none";
+            progressBar.style.width = "100%";
+            progressBar.textContent = "100%";
+        }
+
+        function updateSampleCount() {
+            const audioFiles = document.getElementById("audioInput").files;
+            const totalCount = recordedAudioBlobs.length + audioFiles.length;
+            document.getElementById("sampleCount").textContent = `${totalCount} sample${totalCount !== 1 ? 's' : ''} selected`;
+        }
+
+        function clearForm() {
+            document.getElementById("textInput").value = "";
+            document.getElementById("audioInput").value = "";
+            recordedAudioBlobs = [];
+            updateSampleList();
+            document.getElementById("output").src = "";
+            document.getElementById("download").style.display = "none";
+            document.getElementById("output-section").style.display = "none";
+            updateSampleCount();
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle("light-mode");
+            document.body.classList.toggle("dark-mode");
+            document.getElementById("themeToggleBtn").innerHTML = document.body.classList.contains("light-mode") ? '<i class="fas fa-moon"></i> Toggle Dark Mode' : '<i class="fas fa-sun"></i> Toggle Light Mode';
+        }
+
+        function playSample(filename) {
+            const audioId = filename.replace('.wav', 'Audio');
+            const audio = document.getElementById(audioId);
+            if (audio) {
+                audio.play().catch(error => {
+                    console.error("Error playing audio:", error);
+                    alert("Failed to play audio. Check the file path or format.");
+                });
+            } else {
+                console.error("Audio element not found for:", filename);
+            }
+        }
+    </script>
+</body>
+</html>
